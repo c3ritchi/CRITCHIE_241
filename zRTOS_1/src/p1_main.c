@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 #include "_threadsCore.h"
+#include "_kernelCore.h"
 
 
 //This is C. The expected function heading is int main(void)
@@ -29,6 +30,9 @@ int main( void )
 	uint32_t* newStackLoc = getNewThreadStack(512);
 	printf("new stack address:%x\r\n",(uint32_t)newStackLoc);
 	setThreadingWithPSP(newStackLoc);
+	
+	kernelInit();
+	osSched();
 	
 	//Your code should always terminate in an endless loop if it is done. If you don't
 	//the processor will enter a hardfault and will be weird
