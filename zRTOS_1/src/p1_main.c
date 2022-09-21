@@ -25,10 +25,8 @@ int main( void )
 	printf("Hello, world!\r\n");
 	
 	printf("MSP address:%x\r\n",(uint32_t)(getMSPInitialLocation()));
-	printf("new stack address test:%x\r\n",(uint32_t)(getNewThreadStack(512)));
 	
 	uint32_t* newStackLoc = getNewThreadStack(512);
-	printf("new stack address:%x\r\n",(uint32_t)newStackLoc);
 	setThreadingWithPSP(newStackLoc);
 	
 	kernelInit();
