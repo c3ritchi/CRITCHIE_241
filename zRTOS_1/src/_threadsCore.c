@@ -19,7 +19,7 @@ uint32_t* getNewThreadStack(uint32_t offset){
 	newStackLocInt -= offset;
 	
 	//checks that stack location is within 0x2000 addresses of the MSP to ensure it is not out of range. If not, return false (0) to indicate error
-	if(((uint32_t)(getMSPInitialLocation())-newStackLocInt) > 0x2000){ // check if this is right
+	if(((uint32_t)(getMSPInitialLocation())-newStackLocInt) > 0x2000){ 
 		return 0;
 	}
 	//checks that stack location is on 8 byte boundary. If not, lower address further such that it is on an 8 byte boundary
