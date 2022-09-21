@@ -26,16 +26,14 @@ int main( void )
 	//Retrieving MSP address and printing to UART
 	printf("MSP address:%x\r\n",(uint32_t)(getMSPInitialLocation()));
 	
-	//probably should delete this line. i will go into physical lab to make sure it doesn't cause issues to do so before submitting
-	printf("new stack address:%x\r\n",(uint32_t)(getNewThreadStack(512)));
-	
 	//getting new stack location for PSP
 	uint32_t* newStackLoc = getNewThreadStack(512);
-	// suggested addition: if(newStackLoc==0){printf("error: new thread stack location out of bounds\r\n");}
 	
-	//printing new stack location (can delete)
-	printf("new stack address:%x\r\n",(uint32_t)newStackLoc);
-	
+	//checking for return of 0 which signals new stack location was invalid
+	if(newStackLoc==0){
+		printf("error: new thread stack location out of bounds\r\n");
+		}
+		
 	//setting the PSP location to the newly set stack address
 	setThreadingWithPSP(newStackLoc);
 	
