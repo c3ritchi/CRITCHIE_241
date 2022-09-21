@@ -17,25 +17,35 @@
 //This is C. The expected function heading is int main(void)
 int main( void ) 
 {
-	//Always call this function at the start. It sets up various peripherals, the clock etc. If you don't call this
-	//you may see some weird behaviour
+	//Sets up various periferals, the clock, etc
 	SystemInit();
 
-	//Printf now goes to the UART, so be sure to have PuTTY open and connected
+	//Printf though the UART
 	printf("Hello, world!\r\n");
 	
+	//Retrieving MSP address and printing to UART
 	printf("MSP address:%x\r\n",(uint32_t)(getMSPInitialLocation()));
-	printf("new stack address test:%x\r\n",(uint32_t)(getNewThreadStack(512)));
 	
+	//probably should delete this line. i will go into physical lab to make sure it doesn't cause issues to do so before submitting
+	printf("new stack address:%x\r\n",(uint32_t)(getNewThreadStack(512)));
+	
+	//getting new stack location for PSP
 	uint32_t* newStackLoc = getNewThreadStack(512);
+	// suggested addition: if(newStackLoc==0){printf("error: new thread stack location out of bounds\r\n");}
+	
+	//printing new stack location (can delete)
 	printf("new stack address:%x\r\n",(uint32_t)newStackLoc);
+	
+	//setting the PSP location to the newly set stack address
 	setThreadingWithPSP(newStackLoc);
 	
+	//initializing the kernel (sets PendSV priority to weakest) 
 	kernelInit();
+	
+	//sets ICSR register to set PendSV to pending mode (will run when all other interrupts are done) and flushes pipeline
 	osSched();
 	
-	//Your code should always terminate in an endless loop if it is done. If you don't
-	//the processor will enter a hardfault and will be weird
+	//ending main with an infinite loop
 	while(1){
 	};
 }
