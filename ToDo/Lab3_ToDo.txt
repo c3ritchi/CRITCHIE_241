@@ -1,0 +1,49 @@
+1. How are threads represented in your OS?
+
+
+
+2. What data structures will you use to activate/deactivate/store threads?
+
+
+
+3. How will you context switch? – You are free to use my context-switching code as an example,
+but it is unlikely to work for your OS right out of the box. You’re going to need to tailor it to how
+your stuff works
+
+
+
+4. How do you initialize your OS and start the first thread? – You are free to use the ideas I have
+described above for this, but you will need to explain the exact steps that your specific OS has to
+take. Everyone’s will likely be subtly different.
+
+
+
+STEPS
+1. Create thread struct
+2. Create an array of threads
+2.5 initial thread stack
+3. Write createNewThread
+	a. Setup stack
+	b. store the thread struct
+	
+	Thread struct: function pointer + stack pointer
+	
+	OS data
+	- something to hold all threads, array of threads
+	keeps track of
+		- num of threads
+		- memory pool - threads own stack in memory. Offset from MSP must be correct
+		- currently running threads
+		- round robin scheduler, run threads sequentially
+		- next thread = +1%num threads
+		
+		
+	Set up next thread stack
+		- xPSR (program status register)
+		- Function pointer
+		- PC (where is should go back to), where you currently are
+		- have assembly code to put registers on stack
+		
+		take thread pointer just created, fill in xpsr and function pointer, then push down by 14 more ints
+		
+		thread functions: yield=osSched, figure out which thread to switch to, then handle the switch

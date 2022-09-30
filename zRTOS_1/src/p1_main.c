@@ -24,8 +24,11 @@ int main( void )
 	printf("Hello, world!\r\n");
 	
 	//Retrieving MSP address and printing to UART
-	printf("MSP address:%x\r\n",(uint32_t)(getMSPInitialLocation()));
+	uint32_t * initMSP = getMSPInitialLocation();
+	printf("MSP address:%x\r\n",(uint32_t)(initMSP));
 	
+	
+	/* not now
 	//getting new stack location for PSP
 	uint32_t* newStackLoc = getNewThreadStack(512);
 	
@@ -33,9 +36,10 @@ int main( void )
 	if(newStackLoc==0){
 		printf("error: new thread stack location out of bounds\r\n");
 		}
-		
+	
 	//setting the PSP location to the newly set stack address
 	setThreadingWithPSP(newStackLoc);
+	*/
 	
 	//initializing the kernel (sets PendSV priority to weakest) 
 	kernelInit();

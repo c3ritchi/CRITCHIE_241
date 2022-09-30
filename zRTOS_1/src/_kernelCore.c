@@ -1,5 +1,6 @@
 
 #include "_kernelCore.h"
+#include "_threadsCore.h"
 #include <stdint.h>
 
 void kernelInit(void){

@@ -9,6 +9,8 @@
 	uint32_t* getNewThreadStack(uint32_t offset); //Returns the address of a new PSP with offset of “offset” bytes from MSP. 
 
 	void setThreadingWithPSP(uint32_t* threadStack); //Sets the value of PSP to threadStack and ensures that the microcontroller is using that value by changing the CONTROL register
+	
+	void createNewThread(void (*input_func)(void * input));
 
 #endif
 

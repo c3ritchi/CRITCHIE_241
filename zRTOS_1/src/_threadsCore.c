@@ -1,6 +1,17 @@
 #include <stdint.h>
 #include <LPC17xx.h>
 
+typedef struct{
+	void (*thread_function)(void* input);
+	uint32_t* TOS;
+	
+}threadStruct;
+
+//might want to put this in kernelCore.c, if so, redefine here using 'extern' keyword
+//Global threads
+threadStruct* store_threads[10];
+uint32_t num_threads = 0;
+
 uint32_t* getMSPInitialLocation(void){
 	//sets MSPloc to a pointer with address 0 (part of vector table, contains location of MSP)
 	uint32_t* MSPloc = 0x0;
@@ -46,5 +57,39 @@ void setThreadingWithPSP(uint32_t* threadStack){
 	
 	//sets the control register to its original value but with bit 1 cleared
 	__set_CONTROL(ctrlReg);
+}
+
+//
+
+void createNewThread(void (*input_func)(void * input)){ //accepts function pointer as argument
+	num_threads++;
+	store_threads[num_threads-1]->TOS = getNewThreadStack(512*num_threads); //what is a reasonable offset, 512?
+	store_threads[num_threads-1]->thread_function = input_func; //function is placed in thread
+	
+	*--(store_threads[num_threads-1]->TOS) = 1<<24; //offset to ensure 8 byte alignment, xPSR
+	*--(store_threads[num_threads-1]->TOS) = (uint32_t)(store_threads[num_threads-1]->thread_function); //store PC
+	
+	
+	//the registers are set to values easily identifiable in memory
+	
+	//LR, R12, R3, R2, R1, R0
+	*--(store_threads[num_threads-1]->TOS) = 0x0A;
+	*--(store_threads[num_threads-1]->TOS) = 0x0B;
+	*--(store_threads[num_threads-1]->TOS) = 0x0C;
+	*--(store_threads[num_threads-1]->TOS) = 0x0D;
+	*--(store_threads[num_threads-1]->TOS) = 0x0E;
+	*--(store_threads[num_threads-1]->TOS) = 0x0F;
+	
+	//R11, R10, R9, R8, R7, R6, R5, R4
+	*--(store_threads[num_threads-1]->TOS) = 0x01;
+	*--(store_threads[num_threads-1]->TOS) = 0x02;
+	*--(store_threads[num_threads-1]->TOS) = 0x03;
+	*--(store_threads[num_threads-1]->TOS) = 0x04;
+	*--(store_threads[num_threads-1]->TOS) = 0x05;
+	*--(store_threads[num_threads-1]->TOS) = 0x06;
+	*--(store_threads[num_threads-1]->TOS) = 0x07;
+	*--(store_threads[num_threads-1]->TOS) = 0x08;
+		
+		
 	
 }
