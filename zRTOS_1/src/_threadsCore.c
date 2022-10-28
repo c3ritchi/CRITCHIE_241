@@ -1,11 +1,6 @@
 #include <stdint.h>
 #include <LPC17xx.h>
 
-typedef struct{
-	void (*thread_function)(void* input);
-	uint32_t* TOS;
-	
-}threadStruct;
 
 //might want to put this in kernelCore.c, if so, redefine here using 'extern' keyword
 //Global threads
