@@ -60,7 +60,7 @@ uint8_t read_joystick(){
 }
 
 void adc_fun(){
-	// function checks if ADC is ready to give output, if so reads it to console
+	// function checks if ADC is ready to give output, if so prints ADC output value to console
 	if ( (LPC_ADC->ADGDR>>31) ){
 		printf("%d\n",(LPC_ADC->ADGDR & 65520)>>4);
 		LPC_ADC->ADCR |= (1<<24);
@@ -70,7 +70,7 @@ void adc_fun(){
 // thread functions: 
 
 void read_potentiometer(){
-	// thread checks if ADC is ready to give output, if so reads it to console
+	// thread checks if ADC is ready to give output, if so prints ADC output bits to console
 	while(1){
 		if ( (LPC_ADC->ADGDR>>31) ){
 			printf("%d\n",(LPC_ADC->ADGDR & 65520)>>4);
@@ -99,7 +99,7 @@ void read_joystick_thread(){
 		else{
 			printf("NO DIR\n");
 		}
-		// reads if joystick has been pressed or not
+		// reads if joystick has been pressed or not and prints results
 		if(!((LPC_GPIO1->FIOPIN) & 1<<20)){
 			printf("PRESSED\n");
 		}
@@ -112,9 +112,9 @@ void read_joystick_thread(){
 }
 
 void pushbutton_LED(){
-	// thread reads whether pushbutton is pressed, and if so toggles LED
+	// thread reads whether pushbutton is pressed, and if so toggles LED. 
 	while(1){
-		printf("in button function\n");
+		printf("in button function\n"); // printf for debugging
 		if(!((LPC_GPIO2->FIOPIN) & 1<<10) && (LPC_GPIO1->FIOPIN & (1<<31)) ){
 			if(LPC_GPIO1->FIOPIN & (1<<31)){
 				LPC_GPIO1->FIOCLR |= 1<<31;
@@ -151,14 +151,14 @@ int main(void){
 	LPC_GPIO1->FIODIR |= 0;
 	// setting LEDs to be outputs
 	LPC_GPIO1->FIODIR |= (1<<28) + (1<<29) + (1<<31);
-	// clearing all values (*should this be &=? currently doesn't do anything i don't think)
+	// clearing all values (*don't think this does anything currently as ORing with 0 is the same value)
 	LPC_GPIO1->FIOCLR |= 0;	
 	
 	// setting all GPIOs in port 2 to 0 (input)
 	LPC_GPIO2->FIODIR |= 0;
 	// setting LEDs to be outputs
 	LPC_GPIO2->FIODIR |= (1<<2) + (1<<3) + (1<<4) + (1<<5) + (1<<6);
-	// clearing all values (*should this be &=? currently doesn't do anything i don't think)
+	// clearing all values (*don't think this does anything currently as ORing with 0 is the same value)
 	LPC_GPIO2->FIOCLR |= 0;	
 
 	// enabling ADC
