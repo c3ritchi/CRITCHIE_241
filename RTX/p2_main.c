@@ -151,14 +151,14 @@ int main(void){
 	LPC_GPIO1->FIODIR |= 0;
 	// setting LEDs to be outputs
 	LPC_GPIO1->FIODIR |= (1<<28) + (1<<29) + (1<<31);
-	// clearing all values (*don't think this does anything currently as ORing with 0 is the same value)
+	// clearing bits
 	LPC_GPIO1->FIOCLR |= 0;	
 	
 	// setting all GPIOs in port 2 to 0 (input)
 	LPC_GPIO2->FIODIR |= 0;
 	// setting LEDs to be outputs
 	LPC_GPIO2->FIODIR |= (1<<2) + (1<<3) + (1<<4) + (1<<5) + (1<<6);
-	// clearing all values (*don't think this does anything currently as ORing with 0 is the same value)
+	// clearing bits
 	LPC_GPIO2->FIOCLR |= 0;	
 
 	// enabling ADC
