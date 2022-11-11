@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>__RTGT_UART</Define>
               <Undefine></Undefine>
-              <IncludePath>.\Project2</IncludePath>
+              <IncludePath>.\Project3</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -399,16 +399,6 @@
               <FilePath>.\Project2\Retarget.c</FilePath>
             </File>
             <File>
-              <FileName>uart.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Project2\uart.c</FilePath>
-            </File>
-            <File>
-              <FileName>p2_main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\p2_main.c</FilePath>
-            </File>
-            <File>
               <FileName>Font_6x8_h.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Project2\Font_6x8_h.h</FilePath>
@@ -429,9 +419,79 @@
               <FilePath>.\Project2\GLCD_Scroll.h</FilePath>
             </File>
             <File>
+              <FileName>delay.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Project3\delay.h</FilePath>
+            </File>
+            <File>
+              <FileName>ece_spi.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Project3\ece_spi.h</FilePath>
+            </File>
+            <File>
+              <FileName>led.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Project3\led.h</FilePath>
+            </File>
+            <File>
+              <FileName>MPU9250.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Project3\MPU9250.h</FilePath>
+            </File>
+            <File>
+              <FileName>sensor_fusion.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Project3\sensor_fusion.h</FilePath>
+            </File>
+            <File>
+              <FileName>timer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Project3\timer.h</FilePath>
+            </File>
+            <File>
+              <FileName>type.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Project3\type.h</FilePath>
+            </File>
+            <File>
+              <FileName>ece_spi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Project3\ece_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>led.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Project3\led.c</FilePath>
+            </File>
+            <File>
+              <FileName>MPU9250.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Project3\MPU9250.c</FilePath>
+            </File>
+            <File>
+              <FileName>sensor_fusion.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Project3\sensor_fusion.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Project3\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Project3\uart.c</FilePath>
+            </File>
+            <File>
               <FileName>uart.h</FileName>
               <FileType>5</FileType>
-              <FilePath>.\Project2\uart.h</FilePath>
+              <FilePath>.\Project3\uart.h</FilePath>
+            </File>
+            <File>
+              <FileName>lab4_main_pt1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\lab4_main_pt1.c</FilePath>
             </File>
           </Files>
         </Group>
