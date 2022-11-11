@@ -21,11 +21,13 @@ void leds_set(){
 	while(1){
 		printf("count = %d\n",count);
 	
-	osMutexAcquire(countMutexId, osWaitForever);
+	osMutexAcquire(countMutexId, osWaitForever); //requesting mutex access for count
 	
-		LPC_GPIO1->FIOCLR |= (1<<28) + (1<<29) + (1<<31);
-		LPC_GPIO2->FIOCLR |= (1<<2) + (1<<3) + (1<<4) + (1<<5) + (1<<6);
+	// clear LEDs
+	LPC_GPIO1->FIOCLR |= (1<<28) + (1<<29) + (1<<31);
+	LPC_GPIO2->FIOCLR |= (1<<2) + (1<<3) + (1<<4) + (1<<5) + (1<<6);
 		
+	// turn on LEDs corresponding to count's bits
 	if(count&1){
 				LPC_GPIO1->FIOSET |= 1<<28;	
 		}
@@ -50,8 +52,8 @@ void leds_set(){
 	if(count&128){
 				LPC_GPIO2->FIOSET |= 1<<6;	
 		}
-	osMutexRelease(countMutexId);
-	osThreadYield();	
+	osMutexRelease(countMutexId); // releasing mutex access for count
+	osThreadYield(); // yielding thread
 	}
 	
 }
@@ -60,18 +62,18 @@ void leds_set(){
 void wait_for_button(){
 	while(1){
 	
-	if( !((LPC_GPIO2->FIOPIN) & 1<<10 )){
-		while( !((LPC_GPIO2->FIOPIN) & 1<<10 ) ){
-			osThreadYield();
+	if( !((LPC_GPIO2->FIOPIN) & 1<<10 )){ // checking for button press
+		while( !((LPC_GPIO2->FIOPIN) & 1<<10 ) ){ // waiting for button to be released
+			osThreadYield(); // yield while waiting for button to be released to prevent blocking
 		}
-		osMutexAcquire(countMutexId, osWaitForever);
-		count = (count + 1)%256;
-		osMutexRelease(countMutexId);
-		osDelay(200);
+		osMutexAcquire(countMutexId, osWaitForever); //requesting mutex access for count
+		count = (count + 1)%256; // when all LEDs on (8 bits) reset to 0
+		osMutexRelease(countMutexId); //releasing mutex access for count
+		osDelay(200); // noted issue with reading multiple inputs if button was pressed briefly, delay added for debouncing
 	}
 	
 	}
-	osThreadYield();
+	osThreadYield(); // yielding thread
 }
 
 
@@ -82,6 +84,7 @@ int main(void){
 	
 	SystemInit();
 	
+	// set LEDs to outputs and turn all LEDs off
 	LPC_GPIO1->FIODIR |= 0;
 	LPC_GPIO1->FIODIR |= (1<<28) + (1<<29) + (1<<31);
 	LPC_GPIO1->FIOCLR |= 0;	
@@ -91,11 +94,12 @@ int main(void){
 	LPC_GPIO2->FIOCLR |= 0;	
 	
 	
+	// create mutex for count
 	countMutexId = osMutexNew(&buttonCountMutexAttr);
-	
 	
 	osKernelInitialize();
 	
+	// create threads
 	osThreadNew(leds_set,NULL,NULL);
 	osThreadNew(wait_for_button,NULL,NULL);
 	
