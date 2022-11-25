@@ -325,7 +325,7 @@
             <wLevel>2</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
-            <uC99>0</uC99>
+            <uC99>1</uC99>
             <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>3</v6Lang>
@@ -384,39 +384,9 @@
           <GroupName>Source Group 1</GroupName>
           <Files>
             <File>
-              <FileName>GLCD_Scroll.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Project2\GLCD_Scroll.c</FilePath>
-            </File>
-            <File>
-              <FileName>GLCD_SPI_LPC1700.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Project2\GLCD_SPI_LPC1700.c</FilePath>
-            </File>
-            <File>
               <FileName>Retarget.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Project2\Retarget.c</FilePath>
-            </File>
-            <File>
-              <FileName>Font_6x8_h.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Project2\Font_6x8_h.h</FilePath>
-            </File>
-            <File>
-              <FileName>Font_16x24_h.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Project2\Font_16x24_h.h</FilePath>
-            </File>
-            <File>
-              <FileName>GLCD.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Project2\GLCD.h</FilePath>
-            </File>
-            <File>
-              <FileName>GLCD_Scroll.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Project2\GLCD_Scroll.h</FilePath>
             </File>
             <File>
               <FileName>delay.h</FileName>
@@ -424,24 +394,9 @@
               <FilePath>.\Project3\delay.h</FilePath>
             </File>
             <File>
-              <FileName>ece_spi.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Project3\ece_spi.h</FilePath>
-            </File>
-            <File>
               <FileName>led.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Project3\led.h</FilePath>
-            </File>
-            <File>
-              <FileName>MPU9250.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Project3\MPU9250.h</FilePath>
-            </File>
-            <File>
-              <FileName>sensor_fusion.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Project3\sensor_fusion.h</FilePath>
             </File>
             <File>
               <FileName>timer.h</FileName>
@@ -452,26 +407,6 @@
               <FileName>type.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Project3\type.h</FilePath>
-            </File>
-            <File>
-              <FileName>ece_spi.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Project3\ece_spi.c</FilePath>
-            </File>
-            <File>
-              <FileName>led.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Project3\led.c</FilePath>
-            </File>
-            <File>
-              <FileName>MPU9250.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Project3\MPU9250.c</FilePath>
-            </File>
-            <File>
-              <FileName>sensor_fusion.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Project3\sensor_fusion.c</FilePath>
             </File>
             <File>
               <FileName>timer.c</FileName>
@@ -489,9 +424,29 @@
               <FilePath>.\Project3\uart.h</FilePath>
             </File>
             <File>
-              <FileName>lab4_main_pt1.c</FileName>
+              <FileName>lfsr113.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\lab4_main_pt1.c</FilePath>
+              <FilePath>.\Project4\lfsr113.c</FilePath>
+            </File>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Project4\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>random.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Project4\random.c</FilePath>
+            </File>
+            <File>
+              <FileName>lfsr113.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Project4\lfsr113.h</FilePath>
+            </File>
+            <File>
+              <FileName>random.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Project4\random.h</FilePath>
             </File>
           </Files>
         </Group>
