@@ -23,6 +23,7 @@ typedef struct
 	osStatus_t clientStatus;
 	osStatus_t serverStatus;
 	int clientNumMessage;
+	int clientNumMessagesDropped;
 	int serverNumMessage;
 	int serverNumMessagesDropped;
 	int serverTime;
@@ -88,7 +89,8 @@ void initLEDPins()
 
 */
 
-int num_pairs = 2;
+int num_pairs = 2; //N
+int server_capacity = 10; //K
 
 void client(void* args)
 {
@@ -112,6 +114,11 @@ void client(void* args)
 		
 		osMessageQueueId_t* queue_id = (osMessageQueueId_t *)((*((loggingStruct *)args)).queue_ID);
 		((*((loggingStruct *)args)).clientStatus) = osMessageQueuePut(queue_id,&msg,0,0);
+		
+		if( (int)((*((loggingStruct *)args)).clientStatus) != 0){
+			((*((loggingStruct *)args)).clientNumMessagesDropped)++;
+		}
+		
 		((*((loggingStruct *)args)).clientNumMessage)++;
 		osDelay(get_random_delay_seconds(9,osKernelGetTickFreq())); //delay for tick frequency number of ticks. This means 1 second. We do not need to yield because
 		//of this delay
@@ -122,9 +129,10 @@ void client(void* args)
 void server(void* args)
 {
 	int receivedMessage = 0;
+	int rand_delay = 0;
 	((*((loggingStruct *)args)).serverNumMessage) = 0;
 	((*((loggingStruct *)args)).serverTime) = 0;
-
+  ((*((loggingStruct *)args)).serverNumMessagesDropped) = 0;
 	
 	while(1)
 	{
@@ -143,8 +151,9 @@ void server(void* args)
 		else{
 			((*((loggingStruct *)args)).serverNumMessagesDropped)++;
 		}
-		
-		((*((loggingStruct *)args)).serverTime) = (int)((*((loggingStruct *)args)).serverTime) + get_random_delay_seconds(9,osKernelGetTickFreq());
+		rand_delay = get_random_delay_seconds(9,osKernelGetTickFreq());
+		osDelay(rand_delay);
+		((*((loggingStruct *)args)).serverTime) = (int)((*((loggingStruct *)args)).serverTime) + rand_delay;
 		
 		//we're just going to print the message to the LEDs, mod 256:
 		charToBinLED((unsigned char)(receivedMessage % 256));
@@ -164,24 +173,30 @@ void monitor(void* args)
 	double averageMessageRate = 0;	
 	double averageServiceRate = 0;
 	
-	osMessageQueueId_t q_id;
+	int q_id;
 	osStatus_t client_stat;
 	osStatus_t server_stat;
 	
+	int num_dropped = 0;
+	
 	while(1){
 		for(int i = 0;i<num_pairs;i++){
-			//dropped over sent
-			messageLossRatio =  (int)((*((loggingStruct *)args)).serverNumMessagesDropped) / (int)((*((loggingStruct *)args)).clientNumMessage); 
-			// sent over time elapsed
-			messageArrivalRate = (int)((*((loggingStruct *)args)).clientNumMessage) / timeElapsed;
-			// received / serverSleepTime
-			averageServiceRate = (int)((*((loggingStruct *)args)).serverNumMessage) / (int)((*((loggingStruct *)args)).serverTime);
 			
-			q_id = (((   ((loggingStruct *)args)[i]   )).queue_ID);
+			// num dropped messaged
+			num_dropped = (int)((*((loggingStruct *)args)).clientNumMessagesDropped) + (int)((*((loggingStruct *)args)).serverNumMessagesDropped);
+			//dropped over sent
+			messageLossRatio =  (double)num_dropped / (double)((*((loggingStruct *)args)).clientNumMessage); 
+			// sent over time elapsed
+			messageArrivalRate = (double)((*((loggingStruct *)args)).clientNumMessage) / (double)timeElapsed;
+			// received / serverSleepTime
+			averageServiceRate = (double)((*((loggingStruct *)args)).serverNumMessage) / (double)((*((loggingStruct *)args)).serverTime);
+			
+			q_id = (int)(((   ((loggingStruct *)args)[i]   )).queue_ID);
 			client_stat = (((   ((loggingStruct *)args)[i]   )).clientStatus);
 			server_stat = (((   ((loggingStruct *)args)[i]   )).serverStatus);
 			
-			printf("%d,%d,%d,%f\n",q_id,client_stat,server_stat,messageLossRatio);
+			printf("%d,%d,%d,%f,",q_id,client_stat,server_stat,messageLossRatio);
+			printf("%f,%f\n",messageArrivalRate,averageServiceRate);
 			//printf("%d,%d,%d,%f,%f,%f \n\n",q_id,client_stat,server_stat,messageLossRatio,messageArrivalRate,averageServiceRate); 
 		}
 		
@@ -214,7 +229,7 @@ int main(void)
 	int msg = 0;
 	
 	for(int i = 0;i<num_pairs;i++){
-		osMessageQueueId_t q_id = osMessageQueueNew(50,sizeof(int),NULL);
+		osMessageQueueId_t q_id = osMessageQueueNew(server_capacity,sizeof(int),NULL);
 		logging_array[i].queue_ID = q_id;
 		
 		//set up the threads
