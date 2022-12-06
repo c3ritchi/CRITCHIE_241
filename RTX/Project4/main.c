@@ -17,16 +17,17 @@
 #include <stdio.h> //for printf - this sample code only initializes printf, but you may choose to use it later on, so it's included here
 #include "random.h" //we don't need this here, but it's included so you remember to include it yourselves in your lab
 
+//struct to store data such as message status, message counts, time spent for each server-client pair
 typedef struct 
 {
-	osMessageQueueId_t queue_ID;
-	osStatus_t clientStatus;
-	osStatus_t serverStatus;
-	int clientNumMessage;
-	int clientNumMessagesDropped;
-	int serverNumMessage;
-	int serverNumMessagesDropped;
-	int serverTime;
+	osMessageQueueId_t queue_ID; // queue ID
+	osStatus_t clientStatus; // status of client (success or failed)
+	osStatus_t serverStatus; // status of server (success or failed)
+	int clientNumMessage; // number of messages sent by client
+	int clientNumMessagesDropped; // number of messages dropped by client
+	int serverNumMessage; // number of messages received by server
+	int serverNumMessagesDropped; // number of messages dropped by server
+	int serverTime; // time elapsed in processing messages (server)
 }loggingStruct;
 
 
@@ -83,89 +84,86 @@ void initLEDPins()
 }
 
 
-/*
-	
-	Our client will send a message once every second
-
-*/
-
 int num_pairs = 2; //N
 int server_capacity = 10; //K
 
 void client(void* args)
 {
+	// initialize message variable to 0 
 	int msg = 0;
 	
+	// initialize # of send messages to 0 
 	((*((loggingStruct *)args)).clientNumMessage) = 0;
 
 	while(1)
 	{
 		msg++;
 		
-		/*
-			Put a message into the queue. We give it the ID of the queue we are posting to,
-			the address of the message, 0 for priority (there is only one message, priority is irrelevant), and
-			0 for timeout, meaning "either do this immediately or fail"
-		
-			The put function does return a osStatus_t variable that tells us if it succeeded, which you should use in your 
-			lab to determine if the put was successful (meaning the queue had space for the new message...).   In this example
-			we will not do anything with this information.
-		*/
-		
+		// get queue ID from pair's logging structure 
 		osMessageQueueId_t* queue_id = (osMessageQueueId_t *)((*((loggingStruct *)args)).queue_ID);
+		
+		// put message on queue and set clientStatus to return of the Put function
 		((*((loggingStruct *)args)).clientStatus) = osMessageQueuePut(queue_id,&msg,0,0);
 		
+		// if message failed, increment dropped message count
 		if( (int)((*((loggingStruct *)args)).clientStatus) != 0){
 			((*((loggingStruct *)args)).clientNumMessagesDropped)++;
 		}
 		
+		// increment total message count
 		((*((loggingStruct *)args)).clientNumMessage)++;
-		osDelay(get_random_delay_seconds(9,osKernelGetTickFreq())); //delay for tick frequency number of ticks. This means 1 second. We do not need to yield because
-		//of this delay
+		
+		//delay to simulate random request time
+		osDelay(get_random_delay_seconds(9,osKernelGetTickFreq())); 
 
 	}
 }
 
 void server(void* args)
 {
+	// initialize message variable to 0 
 	int receivedMessage = 0;
+	
+	// initialize random delay time variable
 	int rand_delay = 0;
+	
+	// initialize # of received messages, time elapsed, # of dropped messages to 0 
 	((*((loggingStruct *)args)).serverNumMessage) = 0;
 	((*((loggingStruct *)args)).serverTime) = 0;
-  ((*((loggingStruct *)args)).serverNumMessagesDropped) = 0;
+	((*((loggingStruct *)args)).serverNumMessagesDropped) = 0;
 	
 	while(1)
 	{
-		/*
-			Get a message from the queue and store it in receivedMessage. 
-			The third parameter is for recording the message priority, which we are ignoring.
-			Finally, we tell this thread to waitForever, since its only purpose is to receive and handle
-			messages - it won't do anything if there are no messages available, so it might as well wait!
-			
-			This thread does not use any status information
-		*/
+		// receive message from queue and set logging variable for status to output of get function
 		((*((loggingStruct *)args)).serverStatus) = osMessageQueueGet((osMessageQueueId_t)((*((loggingStruct *)args)).queue_ID),&receivedMessage,NULL,osWaitForever);
+		
+		// if message received, increment count for received messages
 		if( (int)((*((loggingStruct *)args)).serverStatus) == 0 ){
 			((*((loggingStruct *)args)).serverNumMessage)++;
 		}
+		// if message failed to receive, increment count for dropped messages
 		else{
 			((*((loggingStruct *)args)).serverNumMessagesDropped)++;
 		}
+		
+		// delay to simulate random processing time
 		rand_delay = get_random_delay_seconds(9,osKernelGetTickFreq());
 		osDelay(rand_delay);
+		
+		// add processing time to logged elapsed time
 		((*((loggingStruct *)args)).serverTime) = (int)((*((loggingStruct *)args)).serverTime) + rand_delay;
 		
-		//we're just going to print the message to the LEDs, mod 256:
+		// print the message to the LEDs
 		charToBinLED((unsigned char)(receivedMessage % 256));
 		
-		//We need to yield because it is possible that this thread wakes and sees a message right away and we aren't
-		//using priority in this course
+		// yield
 		osThreadYield();
 	}
 }
 
 void monitor(void* args)
 {
+	// initialize variables used in logging to console
 	int timeElapsed = 0;
 	
 	double messageLossRatio = 0;
@@ -182,28 +180,25 @@ void monitor(void* args)
 	while(1){
 		for(int i = 0;i<num_pairs;i++){
 			
-			// num dropped messaged
+			// number of dropped messages on both client and server ends
 			num_dropped = (int)((*((loggingStruct *)args)).clientNumMessagesDropped) + (int)((*((loggingStruct *)args)).serverNumMessagesDropped);
-			//dropped over sent
+			// ratio of dropped messages vs sent messages
 			messageLossRatio =  (double)num_dropped / (double)((*((loggingStruct *)args)).clientNumMessage); 
-			// sent over time elapsed
+			// number of sent messages over time elapsed
 			messageArrivalRate = (double)((*((loggingStruct *)args)).clientNumMessage) / (double)timeElapsed;
-			// received / serverSleepTime
+			// number of received messages over server processing time
 			averageServiceRate = (double)((*((loggingStruct *)args)).serverNumMessage) / (double)((*((loggingStruct *)args)).serverTime);
 			
+			// retrieve status and queue ID from logging structure
 			q_id = (int)(((   ((loggingStruct *)args)[i]   )).queue_ID);
 			client_stat = (((   ((loggingStruct *)args)[i]   )).clientStatus);
 			server_stat = (((   ((loggingStruct *)args)[i]   )).serverStatus);
 			
+			// print results to serial port
 			printf("%d,%d,%d,%f,",q_id,client_stat,server_stat,messageLossRatio);
 			printf("%f,%f\n",messageArrivalRate,averageServiceRate);
-			//printf("%d,%d,%d,%f,%f,%f \n\n",q_id,client_stat,server_stat,messageLossRatio,messageArrivalRate,averageServiceRate); 
 		}
-		
-		//messageLossRatio = droppedMessages / sentMessages;
-		//messageArrivalRate = sentMessages / timeElapsed;
-		//averageServiceRate = successfulMessages / serverSleepTime;
-		
+		// increment counter for how much time has elapsed, wait 1s to run again
 		timeElapsed++;
 		osDelay(osKernelGetTickFreq());
 	}
@@ -228,6 +223,7 @@ int main(void)
 	
 	int msg = 0;
 	
+	// set up N client threads and N server threads
 	for(int i = 0;i<num_pairs;i++){
 		osMessageQueueId_t q_id = osMessageQueueNew(server_capacity,sizeof(int),NULL);
 		logging_array[i].queue_ID = q_id;
@@ -235,7 +231,7 @@ int main(void)
 		//set up the threads
 		osThreadNew(client,&logging_array[i],NULL);
 		osThreadNew(server,&logging_array[i],NULL);
-		osThreadNew(monitor,logging_array,NULL);
+		osThreadNew(monitor,logging_array,NULL); 
 	}
 	
 	
